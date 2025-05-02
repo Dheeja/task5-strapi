@@ -12,14 +12,12 @@ resource "aws_ecr_repository" "strapi_app" {
 resource "null_resource" "docker_build_push" {
   provisioner "local-exec" {
     command = <<EOT
-      cd ../
-      docker build -t ${var.image_url} .
-      aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${var.ecr_repo_url}
-      docker push ${var.image_url}
+      cd ..
+      docker build -t ${aws_ecr_repository.strapi_app.repository_url}:latest .
+      aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${aws_ecr_repository.strapi_app.repository_url}
+      docker push ${aws_ecr_repository.strapi_app.repository_url}:latest
     EOT
   }
 
-  depends_on = [
-    aws_ecr_repository.strapi_app
-  ]
+  depends_on = [aws_ecr_repository.strapi_app]
 }
