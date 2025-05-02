@@ -1,5 +1,5 @@
 # ECR Repository Creation
-resource "aws_ecr_repository" "strapi_app" {
+resource "aws_ecr_repository" "strapi_app1" {
   name = var.ecr_repo_name
 
   image_tag_mutability = "MUTABLE"
@@ -12,12 +12,12 @@ resource "aws_ecr_repository" "strapi_app" {
 resource "null_resource" "docker_build_push" {
   provisioner "local-exec" {
     command = <<EOT
-      cd ..
-      docker build -t ${aws_ecr_repository.strapi_app.repository_url}:latest .
-      aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${aws_ecr_repository.strapi_app.repository_url}
-      docker push ${aws_ecr_repository.strapi_app.repository_url}:latest
+      docker build -t ${aws_ecr_repository.strapi_app1.repository_url}:latest .
+      aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin "${aws_ecr_repository.strapi_app1.repository_url}:latest .
+      docker push ${aws_ecr_repository.strapi_app1.repository_url}:latest .
+
     EOT
   }
 
-  depends_on = [aws_ecr_repository.strapi_app]
+  depends_on = [aws_ecr_repository.strapi_app1]
 }
